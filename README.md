@@ -1,15 +1,17 @@
 # Home Server Power & Health Monitor
 
+```mermaid
 graph TD
-A[TX3 Mini / Armbian] -->|Runs| B[Node.js Service]
-B -->|Every 60s| C[(Local Heartbeat JSON)]
-D[Power Interruption] -.->|System Halt| B
-E[System Reboot] -->|Trigger| F[Recovery Script]
-F -->|Reads| C
-F -->|Calculates| G[Downtime Delta]
-G -->|API Post| H[Discord Channel]
-I[User Command !status] -->|Query| B
-B -->|Hardware Data| H
+    A[TX3 Mini / Armbian] -->|Runs| B[Node.js Service]
+    B -->|Every 60s| C[(Local Heartbeat JSON)]
+    D[Power Interruption] -.->|System Halt| B
+    E[System Reboot] -->|Trigger| F[Recovery Script]
+    F -->|Reads| C
+    F -->|Calculates| G[Downtime Delta]
+    G -->|API Post| H[Discord Channel]
+    I[User Command !status] -->|Query| B
+    B -->|Hardware Data| H
+```
 
 A resilient Node.js monitoring solution deployed on an ARM-based Tanix TX3 Mini, designed to track system availability and provide real-time hardware metrics via Discord.
 
