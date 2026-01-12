@@ -30,28 +30,23 @@ setInterval(() => {
 client.once('ready', async () => {
     console.log(`Home Server Monitor Online: ${client.user.tag}`);
     
-    // 1. Check if the heartbeat file exists
     if (fs.existsSync(HEARTBEAT_FILE)) {
         try {
-            // 2. Read the "Last Recorded Heartbeat" from the file
             const rawData = fs.readFileSync(HEARTBEAT_FILE);
             const lastSeenData = JSON.parse(rawData);
             const lastHeartbeat = lastSeenData.timestamp;
             
             const now = Date.now();
             
-            // 3. Calculate total downtime in minutes
             const diffMs = now - lastHeartbeat;
             const downtimeMinutes = Math.floor(diffMs / 1000 / 60);
 
-            // 4. Only notify if downtime was significant (e.g., more than 2 minutes)
-            // This avoids spamming notifications during quick manual restarts.
             if (downtimeMinutes > 2) {
                 const channel = await client.channels.fetch(process.env.CHANNEL_ID);
                 if (channel) {
                     const recoveryEmbed = new EmbedBuilder()
                         .setTitle('System Power Recovery')
-                        .setColor(0x2ecc71) // Professional Green
+                        .setColor(0x2ecc71)
                         .addFields(
                             { name: 'Last Recorded Heartbeat', value: `<t:${Math.floor(lastHeartbeat / 1000)}:f>`, inline: false },
                             { name: 'Recovery Time', value: `<t:${Math.floor(now / 1000)}:f>`, inline: false },
@@ -68,7 +63,6 @@ client.once('ready', async () => {
         }
     }
 
-    // 5. Immediately write a fresh heartbeat to reset the cycle
     fs.writeFileSync(HEARTBEAT_FILE, JSON.stringify({ timestamp: Date.now() }));
 });
 
@@ -82,12 +76,11 @@ client.on('messageCreate', async (message) => {
             const mem = await si.mem();
             const osInfo = await si.osInfo();
             const uptime = si.time().uptime;
-            const disk = await si.fsSize(); // New: Fetch disk info
+            const disk = await si.fsSize();
 
             const usedMem = (mem.active / 1024 / 1024 / 1024).toFixed(2);
             const totalMem = (mem.total / 1024 / 1024 / 1024).toFixed(2);
             
-            // Calculate main disk usage (usually the first drive /)
             const mainDisk = disk[0];
             const diskUsed = (mainDisk.used / 1024 / 1024 / 1024).toFixed(2);
             const diskTotal = (mainDisk.size / 1024 / 1024 / 1024).toFixed(2);
